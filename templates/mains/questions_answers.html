@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} {{ page_title }} {% endblock %}
+
+{% block content %}
+    <div>
+        <ul>
+            <li><a href="/questions/tome/">By time</a></li>
+            <li><a href="/questions/tome/votes">By votes</a></li>
+        </ul>
+    </div>
+        <h1>Questions to you.</h1>
+        {% if l_quests %}
+            {% for quest in l_quests %}
+                <h2>{{ quest.question_text }}</h2>
+                <div>{{ quest.votes }} people want to know</div>
+                <div>
+                    Asked by {{  quest.seeker.user.username }}
+                </div>
+                <a href="{{ quest.question_id }}/">See Details</a>
+                <p></p>
+                <p></p>
+            {% endfor %}
+        {% else %}
+            No Questions found :s
+        {% endif %}
+{% endblock %}

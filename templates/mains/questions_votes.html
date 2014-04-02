@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %} {{ page_title }} {% endblock %}
+
+{% block content %}
+    <div>
+        <ul>
+            <li><a href="/questions/all/">By time</a></li>
+            <li><a href="/questions/all/votes">By votes</a></li>
+        </ul>
+    </div>
+        <h1>Questions from the World.</h1>
+        {% if l_quests %}
+            {% for quest in l_quests %}
+                <h2>{{ quest.question_text }}</h2>
+                <div>
+                    {{ quest.votes }} people want to know
+                    <button type="submit">+1</button>
+                </div>
+                <p></p>
+                <div>
+                    Asked by {{  quest.seeker.user.username }}
+                    To {{ quest.target.user.username }}
+                </div>
+                <p></p> <p></p>
+            {% endfor %}
+        {% else %}
+            No Questions found :s
+        {% endif %}
+{% endblock %}

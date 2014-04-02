@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %} {{ page_title }} {% endblock %}
+
+{% block content %}
+        Welcome {{ current_user }}
+        <form class="form-horizontal" name="LoginForm" action="/home/" method="post">
+            {% csrf_token %}
+            <div class="control-group">
+                <label class="control-label" for="question">What is your question?</label>
+                <div class="controls">
+                    <input type="text" id="question" name="question"  placeholder="Question">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="target">Ask to</label>
+                <div class="controls">
+                    <input type="target" name="target" id="target" placeholder="Target">
+                </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                  <button type="submit" class="btn">Submit</button>
+              </div>
+            </div>
+        </form>
+{% endblock %}

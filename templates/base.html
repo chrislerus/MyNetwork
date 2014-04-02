@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <title>{% block title %}My Network{% endblock %}</title>
+</head>
+
+<body>
+    <div id="sidebar">
+        {% block sidebar %}
+        <ul>
+            <li><a href="/home/">Home</a></li>
+            <li><a href="/login/">Logout</a></li>
+            <li><a href="/friends/">My Profile</a></li>
+            <li><a href="/questions/tome/">My Questions</a></li>
+            <li><a href="/questions/all/">Questions from the world</a></li>
+        </ul>
+        {% endblock %}
+    </div>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
