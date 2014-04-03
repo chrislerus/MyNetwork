@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %} {{ page_title }} {% endblock %}
+{% block content %}
+    <h1>{{ quest.question_text }}</h1>
+    <div>
+      {{ quest.votes }} people want to know!
+      <form method='POST'>
+          {% csrf_token %}
+        <button type="submit" name="btn_vote">+1</button>
+      </form>
+    </div>
+    {% if answers %}
+        <ul>
+        {% for answer in answers %}
+            <li>{{ answer.user_id.user.username }} said : {{ answer.text }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <form class="form-horizontal" name="LoginForm" action="/questions/tome/{{ quest.question_id }}/" method="post">
+            {% csrf_token %}
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" id="answer" name="answer"  placeholder="Write an answer">
+                </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                  <button type="submit" name="btn_answer">Send</button>
+              </div>
+            </div>
+    </form>
+{% endblock %}

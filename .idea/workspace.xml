@@ -31,7 +31,7 @@
       <file leaf-file-name="models.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mains/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="29" selection-start="691" selection-end="691" vertical-scroll-proportion="0.61077845" vertical-offset="0" max-vertical-offset="918">
+            <state line="22" column="51" selection-start="796" selection-end="796" vertical-scroll-proportion="0.6786427" vertical-offset="0" max-vertical-offset="918">
               <folding />
             </state>
           </provider>
@@ -83,7 +83,9 @@
         <entry file="file://$PROJECT_DIR$/templates/mains/profile.html">
           <provider selected="true" editor-type-id="text-editor">
             <state line="13" column="18" selection-start="466" selection-end="466" vertical-scroll-proportion="-8.5" vertical-offset="0" max-vertical-offset="374">
-              <folding />
+              <folding>
+                <marker date="1396550584739" expanded="true" signature="238:446" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -920,7 +922,9 @@
     <entry file="file://$PROJECT_DIR$/templates/mains/profile.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="18" selection-start="466" selection-end="466" vertical-scroll-proportion="-8.5" vertical-offset="0" max-vertical-offset="374">
-          <folding />
+          <folding>
+            <marker date="1396550584739" expanded="true" signature="238:446" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -951,7 +955,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mains/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="29" selection-start="691" selection-end="691" vertical-scroll-proportion="0.61077845" vertical-offset="0" max-vertical-offset="918">
+        <state line="22" column="51" selection-start="796" selection-end="796" vertical-scroll-proportion="0.6786427" vertical-offset="0" max-vertical-offset="918">
           <folding />
         </state>
       </provider>
