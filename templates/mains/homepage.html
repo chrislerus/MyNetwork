@@ -2,7 +2,6 @@
 {% block title %} {{ page_title }} {% endblock %}
 
 {% block content %}
-        Welcome {{ current_user }}
         <form class="form-horizontal" name="LoginForm" action="/home/" method="post">
             {% csrf_token %}
             <div class="control-group">

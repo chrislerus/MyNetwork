@@ -14,13 +14,15 @@
                 <h2>{{ quest.question_text }}</h2>
                 <div>
                     {{ quest.votes }} people want to know
-                    <button type="submit">+1</button>
+                        <a></a>
+                    </form>
                 </div>
                 <p></p>
                 <div>
                     Asked by {{  quest.seeker.user.username }}
                     To {{ quest.target.user.username }}
                 </div>
+                <a href="{{ quest.question_id }}/">See Details</a>
                 <p></p> <p></p>
             {% endfor %}
         {% else %}
