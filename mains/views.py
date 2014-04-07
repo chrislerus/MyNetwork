@@ -37,15 +37,25 @@ def homepage(request):
 
 
 # Display friends. Not handled if no user
+# ownprofile: 1 = myself, 2 = already friends, 3 = nobody
 def profile(request, username):
-    current_user = Asker.objects.get(user__username__exact=username)
-    if current_user:
-        l_friends = current_user.friends.all()
-    own_profile = (current_user.user == request.user) and ()
-
+    current_profile = Asker.objects.get(user__username__exact=username)
+    log_in_asker = Asker.objects.get(user__username__exact=request.user)
+    if 'btn_friend' in request.POST:
+        log_in_asker.add_relation(current_profile)
+    if 'btn_unfriend' in request.POST:
+        log_in_asker.del_relation(current_profile)
+    if current_profile:
+        l_friends = current_profile.get_friends()
+    if current_profile.user == request.user:
+        own_profile = 1
+    elif log_in_asker in l_friends:
+        own_profile = 2
+    else:
+        own_profile = 3
     return render_to_response('mains/profile.html',
         {'l_friends': l_friends, 'page_title': "My Profile", 'current_user': request.user,
-         'profile': current_user, 'own_profile': own_profile},
+         'profile': current_profile, 'own_profile': own_profile},
         context_instance=RequestContext(request)
         )
 

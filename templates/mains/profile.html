@@ -15,7 +15,16 @@
         {% else %}
             No Friends found :s
         {% endif %}
-        {% if not own_profile %}
-            Follow {{ profile.user.username }}
+        {% if own_profile  == 3%}
+            <form method='POST'>
+                {% csrf_token %}
+                <button type="submit" name="btn_friend">Be Friend</button>
+             </form>
+        {% endif %}
+        {% if own_profile == 2%}
+            <form method='POST'>
+                {% csrf_token %}
+                <button type="submit" name="btn_unfriend">UnFriend</button>
+             </form>
         {% endif %}
 {% endblock %}
