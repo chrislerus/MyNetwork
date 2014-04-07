@@ -9,9 +9,13 @@
             {% for friend in l_friends %}
                 <li>{{ friend.user.username }}</li>
                 <a href="/{{ friend.user.username }}/">See Details</a>
+
             {% endfor %}
             </ul>
         {% else %}
             No Friends found :s
+        {% endif %}
+        {% if not own_profile %}
+            Follow {{ profile.user.username }}
         {% endif %}
 {% endblock %}

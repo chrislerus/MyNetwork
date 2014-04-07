@@ -11,9 +11,24 @@
         <ul>
             <li><a href="/home/">Home</a></li>
             <li><a href="/login/">Logout</a></li>
-            <li><a href="/{{ current_user }}/">{{ current_user }}</a></li>
+            <li><a href="/{{ current_user }}/">{{ current_user.username }}</a></li>
             <li><a href="/questions/tome/">My Questions</a></li>
             <li><a href="/questions/all/">Questions from the world</a></li>
+            <li>
+                <form class="form-horizontal" name="search" action="/search/" method="post">
+                {% csrf_token %}
+                <div class="control-group">
+                  <div class="controls">
+                    <input type="text" id="search" name="search"  placeholder="Search">
+                  </div>
+                </div>
+                <div class="control-group">
+                  <div class="controls">
+                    <button type="submit" class="btn_search">Search</button>
+                  </div>
+                </div>
+                </form>
+            </li>
         </ul>
         {% endblock %}
     </div>

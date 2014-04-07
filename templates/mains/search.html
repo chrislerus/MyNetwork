@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} {{ page_title }} {% endblock %}
+{% block content %}
+        <h1>Research for : {{ req_search }}</h1>
+        {% if l_user %}
+            <h2>{{ l_user|length }} users found :</h2>
+            <ul>
+            {% for asker in l_user %}
+                <li>{{ asker.user.username }}</li>
+                <a href="/{{ asker.user.username }}/">See Details</a>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <h2>No Friends found :s</h2>
+        {% endif %}
+    {% if l_quest %}
+            <h2>{{ l_quest|length }} questions found :</h2>
+            <ul>
+            {% for quest in l_quest %}
+                <h3>{{ quest.question_text }}</h3>
+                <div>{{ quest.votes }} people want to know</div>
+                <div>
+                    Asked by {{  quest.seeker.user.username }}
+                </div>
+                <a href="/questions/all/{{ quest.question_id }}/">See Details</a>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <h2>No Questions found :s</h2>
+        {% endif %}
+{% endblock %}

@@ -27,11 +27,8 @@ def homepage(request):
     if request.POST:
         quest_text = request.POST['question']
         target = request.POST['target']
-        for asker in Asker.objects.all():
-            if asker.user.username == target:
-                current_target = asker
-            if asker.user == request.user:
-                current_seeker = asker
+        current_seeker = Asker.objects.get(user__username__exact=request.user)
+        current_target = Asker.objects.get(user__username__exact=target)
         Question.objects.create(question_text = quest_text, seeker=current_seeker, target=current_target)
         return HttpResponseRedirect('/home/')
     return render_to_response('mains/homepage.html',
@@ -41,13 +38,14 @@ def homepage(request):
 
 # Display friends. Not handled if no user
 def profile(request, username):
-    for asker in Asker.objects.all():
-        if username == asker.user.username:
-            current_user = asker
-            break
-    l_friends = current_user.friends.all()
+    current_user = Asker.objects.get(user__username__exact=username)
+    if current_user:
+        l_friends = current_user.friends.all()
+    own_profile = (current_user.user == request.user) and ()
+
     return render_to_response('mains/profile.html',
-        {'l_friends': l_friends, 'page_title': "My Profile",  'current_user': request.user, 'profile': current_user},
+        {'l_friends': l_friends, 'page_title': "My Profile", 'current_user': request.user,
+         'profile': current_user, 'own_profile': own_profile},
         context_instance=RequestContext(request)
         )
 
@@ -89,9 +87,7 @@ def tome_questions_by_time(request):
 def detail_answer(request, question_id):
     current_quest = Question.objects.get(pk=question_id)
     answers = Answer.objects.filter(question=current_quest)
-    for asker in Asker.objects.all():
-            if asker.user == request.user:
-                current_asker = asker
+    current_asker = Asker.objects.get(user__username__exact=request.user)
     if request.POST:
         if 'btn_vote' in request.POST:
             current_quest.votes += 1
@@ -102,4 +98,13 @@ def detail_answer(request, question_id):
             return HttpResponseRedirect('questions/tome/')
     return render_to_response('mains/question_details.html',
         {"quest": current_quest, "page_title": "Detail Question", "answers": answers, 'current_user': request.user},
+        context_instance=RequestContext(request))
+
+def search(request):
+    if 'search' in request.POST:
+        req_search = request.POST['search']
+        l_quest = Question.objects.filter(question_text__icontains=req_search)
+        l_user = Asker.objects.filter(user__username__icontains = req_search)
+    return render_to_response('mains/search.html',
+        {'req_search': req_search, 'current_user': request.user, 'l_quest': l_quest, 'l_user': l_user},
         context_instance=RequestContext(request))
