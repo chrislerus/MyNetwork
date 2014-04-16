@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Users can be friends
 class Asker(models.Model):
@@ -10,6 +13,14 @@ class Asker(models.Model):
                                      symmetrical=False,
                                      related_name='friend_to+',
                                      blank=True)
+    type_liked = models.ManyToManyField('Type',
+                                        related_name="+")
+    creation_time = models.DateTimeField(default=datetime.now)
+    last_time = models.DateTimeField(default=datetime.now)
+    last_friend_add = models.DateTimeField(default=datetime.now)
+    last_vote = models.DateTimeField(default=datetime.now)
+    genius = models.ForeignKey('Genius', null=True)
+
     def add_relation(self, asker, first=True):
         relation, created = Relation.objects.get_or_create(
             from_asker=self,
@@ -33,16 +44,15 @@ class Asker(models.Model):
             to_asker__from_asker=self
         )
 
+    def set_last_time(self):
+        logger.warning("Set last time")
+        self.last_time = datetime.now()
+        self.save()
+
     def __unicode__(self):
         return self.user.username
 
-    def create_asker(sender, instance, created, **kwargs):
-        if created:
-            profile, created = Asker.objects.get_or_create(user=instance)
-        return
-
     # Create a asker when a user is created
-    post_save.connect(create_asker, sender=User)
 
 
 class Relation(models.Model):
@@ -59,9 +69,12 @@ class Question(models.Model):
     type = models.CharField(max_length=10)
     visibility = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
+    creation_time = models.DateTimeField(default=datetime.now())
+    last_vote_time = models.DateTimeField(default=datetime.now())
 
     def __unicode__(self):
         return u"%s" % self.question_id
+
     def __str__(self):
         return self.question_text
 
@@ -69,16 +82,45 @@ class Question(models.Model):
 class Answer(models.Model):
     answer_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(Asker)
-    question = models.ForeignKey(Question)
+    question_id = models.ForeignKey(Question)
     text = models.CharField(max_length=80)
+    creation_time = models.DateTimeField(default=datetime.now())
 
     def __unicode__(self):
         return u"%s" % self.answer_id
 
+
 class Vote(models.Model):
     vote_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(Asker)
+    user_id = models.ForeignKey(Asker, related_name="voter")
     question_id = models.ForeignKey(Question)
+    creation_time = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
         return u"%s" % self.vote_id
+
+
+class Genius(models.Model):
+    genius_id = models.AutoField(primary_key=True)
+    question_id = models.ForeignKey(Question, related_name="question")
+    asker_id = models.ForeignKey(Asker, related_name="asker")
+    rate = models.FloatField(default=0)
+    rate_friends = models.FloatField(default=0)
+    rate_world = models.FloatField(default=0)
+
+
+# Type == 1 = Suggest Friends, 2 = Suggest vote, 3 = Old Connexion, 4 = Friends +1
+# Level == Importance
+class Notification(models.Model):
+    notif_id = models.AutoField(primary_key=True)
+    asker_id = models.ForeignKey('Asker', related_name="notified")
+    friend_id = models.ForeignKey('Asker', related_name="notifier", null=True)
+    type = models.IntegerField(default=0)
+    seen = models.BooleanField(default=False)
+    level = models.IntegerField(default=0)
+    creation_time = models.DateTimeField(default=datetime.now())
+
+
+class Type(models.Model):
+    type_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=20)

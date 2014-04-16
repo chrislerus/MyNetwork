@@ -1,6 +1,6 @@
     {% block main %}
     <div id="login">
-        <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
+        <form class="form-horizontal" name="newUser" action="/new_user/" method="post">
         {% csrf_token %}
         {% if next %}
             <input type="hidden" name="next" value="{{ next }}" />
@@ -9,7 +9,13 @@
             <label class="control-label" for="username">Username</label>
             <div class="controls">
                 <input type="text" id="username" name="username"  placeholder="Username">
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email">Email</label>
+            <div class="controls">
+                <input type="text" name="email" id="email" placeholder="Email">
             </div>
+        </div>
         </div>
         <div class="control-group">
             <label class="control-label" for="password">Password</label>
@@ -18,13 +24,16 @@
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label" for="password">Confirm Password</label>
             <div class="controls">
-                <button type="submit" class="btn">Login</button>
+                <input type="password" name="password" id="password" placeholder="Password">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn">Create profile</button>
             </div>
         </div>
         </form>
-        <div>
-            <a href="/new_user/">I'm a new user</a>
-        </div>
     </div>
     {% endblock %}

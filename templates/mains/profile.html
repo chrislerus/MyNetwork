@@ -3,28 +3,42 @@
 {% block content %}
     Username : {{ profile.user.username }}
     <p></p>
-        {% if l_friends %}
-            {{ l_friends|length }} friends :
-            <ul>
+    {% if l_friends %}
+        {{ l_friends|length }} friends :
+        <ul>
             {% for friend in l_friends %}
                 <li>{{ friend.user.username }}</li>
                 <a href="/{{ friend.user.username }}/">See Details</a>
 
             {% endfor %}
-            </ul>
-        {% else %}
-            No Friends found :s
-        {% endif %}
-        {% if own_profile  == 3%}
-            <form method='POST'>
-                {% csrf_token %}
-                <button type="submit" name="btn_friend">Be Friend</button>
-             </form>
-        {% endif %}
-        {% if own_profile == 2%}
-            <form method='POST'>
-                {% csrf_token %}
-                <button type="submit" name="btn_unfriend">UnFriend</button>
-             </form>
-        {% endif %}
+        </ul>
+    {% else %}
+        No Friends found :s
+    {% endif %}
+    {% if own_profile  == 3%}
+        <form method='POST'>
+            {% csrf_token %}
+            <button type="submit" name="btn_friend">Be Friend</button>
+        </form>
+    {% endif %}
+    {% if own_profile == 2%}
+        <form method='POST'>
+            {% csrf_token %}
+            <button type="submit" name="btn_unfriend">UnFriend</button>
+        </form>
+         <form method="post">
+            {% csrf_token %}
+            <div class="control-group">
+                <label class="control-label" for="question">What is your question?</label>
+                <div class="controls">
+                    <input type="text" id="question" name="question"  placeholder="Question">
+                </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                  <button type="submit" class="btn_quest">Submit</button>
+              </div>
+            </div>
+        </form>
+    {% endif %}
 {% endblock %}

@@ -29,8 +29,6 @@ TODO
 
 - Visibility
 
-- Add friends
-
 - Search engine
 
 Tests
