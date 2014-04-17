@@ -1,11 +1,15 @@
 from django.shortcuts import render, render_to_response, redirect
+from django.views.decorators.csrf import csrf_exempt
 from mains.models import Answer, Question, Asker, Vote
 from django.contrib.auth.models import User
 from django.http import *
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from mains.signals import *
+
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from mains.serializers import QuestionSerializers
 
 import logging
 
@@ -35,7 +39,7 @@ def new_user(request):
         logger.warning("Save User")
         return HttpResponseRedirect('/login/')
     return render_to_response('mains/new_user.html',
-                              {},
+        {},
                               context_instance=RequestContext(request))
 
 # Home. Ask a question to a asker.
@@ -75,34 +79,34 @@ def profile(request, username):
     else:
         own_profile = 3
     return render_to_response('mains/profile.html',
-        {'l_friends': l_friends, 'page_title': "My Profile", 'current_user': request.user,
-         'profile': current_profile, 'own_profile': own_profile},
-        context_instance=RequestContext(request)
-        )
+                              {'l_friends': l_friends, 'page_title': "My Profile", 'current_user': request.user,
+                               'profile': current_profile, 'own_profile': own_profile},
+                              context_instance=RequestContext(request)
+    )
 
 
 # Display all questions
 def all_questions_by_votes(request):
     l_quests = Question.objects.exclude(target=request.user.id).order_by('-votes')
     return render_to_response('mains/questions_votes.html',
-        {"l_quests": l_quests, "page_title": "Questions World", 'current_user': request.user},
-        context_instance=RequestContext(request))
+                              {"l_quests": l_quests, "page_title": "Questions World", 'current_user': request.user},
+                              context_instance=RequestContext(request))
 
 
 # Display question to vote ordered by time (Id)
 def all_questions_by_time(request):
     l_quests = Question.objects.exclude(target=request.user.id).order_by('-question_id')
     return render_to_response('mains/questions_votes.html',
-        {"l_quests": l_quests, "page_title": "Questions World", 'current_user': request.user},
-        context_instance=RequestContext(request))
+                              {"l_quests": l_quests, "page_title": "Questions World", 'current_user': request.user},
+                              context_instance=RequestContext(request))
 
 
 # Display questions asked by people, ordered by votes
 def tome_questions_by_votes(request):
     l_quests = Question.objects.filter(target=request.user.id).order_by('-votes')
     return render_to_response('mains/questions_answers.html',
-        {"l_quests": l_quests, "page_title": "Questions To Me", 'current_user': request.user},
-        context_instance=RequestContext(request))
+                              {"l_quests": l_quests, "page_title": "Questions To Me", 'current_user': request.user},
+                              context_instance=RequestContext(request))
 
 
 # Display questions asked by people, ordered by time (Id)
@@ -110,8 +114,8 @@ def tome_questions_by_time(request):
 
     l_quests = Question.objects.filter(target=request.user.id).order_by('-question_id')
     return render_to_response('mains/questions_answers.html',
-        {"l_quests": l_quests, "page_title": "Questions To Me", 'current_user': request.user},
-        context_instance=RequestContext(request))
+                              {"l_quests": l_quests, "page_title": "Questions To Me", 'current_user': request.user},
+                              context_instance=RequestContext(request))
 
 
 # TODO : Disable button if already voted. How? check vote table
@@ -128,8 +132,8 @@ def detail_answer(request, question_id):
             Answer.objects.create(user_id=current_asker, question=current_quest, text=request.POST['answer'])
             return HttpResponseRedirect('questions/tome/')
     return render_to_response('mains/question_details.html',
-        {"quest": current_quest, "page_title": "Detail Question", "answers": answers, 'current_user': request.user},
-        context_instance=RequestContext(request))
+                              {"quest": current_quest, "page_title": "Detail Question", "answers": answers, 'current_user': request.user},
+                              context_instance=RequestContext(request))
 
 
 def search(request):
@@ -138,5 +142,27 @@ def search(request):
         l_quest = Question.objects.filter(question_text__icontains=req_search)
         l_user = Asker.objects.filter(user__username__icontains = req_search)
     return render_to_response('mains/search.html',
-        {'req_search': req_search, 'current_user': request.user, 'l_quest': l_quest, 'l_user': l_user},
-        context_instance=RequestContext(request))
+                              {'req_search': req_search, 'current_user': request.user, 'l_quest': l_quest, 'l_user': l_user},
+                              context_instance=RequestContext(request))
+
+
+class JSONResponse(HttpResponse):
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+@csrf_exempt
+def question_list(request):
+    if request.method == 'GET':
+        questions = Question.objects.all()
+        serializer = QuestionSerializers(questions, many=True)
+        return JSONResponse(serializer.data)
+    elif request.method == 'POST':
+        data = JSONParser.parse(request)
+        serializer = QuestionSerializers(data=data)
+        try:
+            serializer.save_object()
+            return JSONResponse(serializer.data, status=201)
+        except:
+            return JSONResponse(serializer._errors, status=400)

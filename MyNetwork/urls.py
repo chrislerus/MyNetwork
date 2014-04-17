@@ -18,5 +18,6 @@ urlpatterns = patterns('',
     url(r'^questions/tome/votes/$', 'mains.views.tome_questions_by_votes'),
     url(r'^questions/tome/(?P<question_id>\d+)/', 'mains.views.detail_answer'),
     url(r'^questions/all/votes/(?P<question_id>\d+)/', 'mains.views.detail_answer'),
+    url(r'^rest/questions/$', 'mains.views.question_list'),
     url(r'^(?P<username>[a-zA-Z0-9_.-]+)/$', 'mains.views.profile'),
 )
