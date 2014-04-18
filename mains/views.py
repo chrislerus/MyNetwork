@@ -1,6 +1,5 @@
 from django.shortcuts import render, render_to_response, redirect
 from django.views.decorators.csrf import csrf_exempt
-from mains.models import Answer, Question, Asker, Vote
 from django.contrib.auth.models import User
 from django.http import *
 from django.template import RequestContext
@@ -10,6 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from mains.serializers import QuestionSerializers
+from mains.models import Answer, Question, Asker, Vote
+from mains.signals import *
 
 import logging
 
@@ -126,8 +127,6 @@ def detail_answer(request, question_id):
     if request.POST:
         if 'btn_vote' in request.POST:
             Vote.objects.create(user_id=current_asker, question_id=current_quest)
-            current_quest.votes += 1
-            current_quest.save()
         elif 'btn_answer' in request.POST:
             Answer.objects.create(user_id=current_asker, question=current_quest, text=request.POST['answer'])
             return HttpResponseRedirect('questions/tome/')

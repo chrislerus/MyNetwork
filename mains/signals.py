@@ -49,16 +49,27 @@ def question_created(sender, instance, created, **kwargs):
     if created:
         logger.warning("Notif TODO : Question is created")
 
+
 @receiver(post_save, sender=Vote)
 def vote_created(sender, instance, created, **kwargs):
     if created:
         logger.warning("Notif TODO : Vote is created")
+        current_quest = instance.question_id
+        current_quest.votes += 1
+        current_quest.save()
         # TODO Create notif of a vote AND Check if 10 votes
-        if instance.question_id.votes > 9:
-            logger.warning("------------- Question trendy")
+        if current_quest.votes > 9:
+            logger.warning("------------- Question trendy ", current_quest.votes)
         else:
-            logger.warning("------------- Question new")
-
+            logger.warning("------------- Question new ", current_quest.votes)
+        # Create notif type friend if its a friend
+        if instance.question_id.seeker.is_friend(current_quest.target):
+            logger.warning("-----------------its a friend")
+            Notification.objects.get_or_create(asker_id=current_quest.target,
+                                               friend_id=current_quest.seeker,
+                                               type=4)
+        # calculate trend_grade question
+        Question.set_trend_grade(instance.question_id)
 
 @receiver(post_save, sender=Relation)
 def relation_created(sender, instance, created, **kwargs):

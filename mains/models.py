@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.utils.timezone import utc
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class Asker(models.Model):
     last_time = models.DateTimeField(default=datetime.now)
     last_friend_add = models.DateTimeField(default=datetime.now)
     last_vote = models.DateTimeField(default=datetime.now)
-    genius = models.ForeignKey('Genius', null=True)
+
 
     def add_relation(self, asker, first=True):
         relation, created = Relation.objects.get_or_create(
@@ -40,9 +41,11 @@ class Asker(models.Model):
         return
 
     def get_friends(self):
-        return self.friends.filter(
-            to_asker__from_asker=self
-        )
+        return self.friends.filter(to_asker__from_asker=self)
+
+    def is_friend(self, asker):
+        list_friend = self.friends.filter(to_asker__from_asker=self)
+        return asker in list_friend
 
     def set_last_time(self):
         logger.warning("Set last time")
@@ -69,8 +72,20 @@ class Question(models.Model):
     type = models.CharField(max_length=10)
     visibility = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
+    trend_grade = models.FloatField(default=0)
     creation_time = models.DateTimeField(default=datetime.now())
     last_vote_time = models.DateTimeField(default=datetime.now())
+
+    def set_last_vote_time(self):
+        self.last_vote_time = datetime.now()
+        self.save()
+        return
+
+    def set_trend_grade(self):
+        delta_t = (datetime.utcnow().replace(tzinfo=utc) - self.last_vote_time).seconds
+        self.trend_grade += (self.votes.__float__() / delta_t.__float__())
+        self.set_last_vote_time()
+        return
 
     def __unicode__(self):
         return u"%s" % self.question_id
@@ -94,7 +109,7 @@ class Vote(models.Model):
     vote_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(Asker, related_name="voter")
     question_id = models.ForeignKey(Question)
-    creation_time = models.DateTimeField(default=datetime.now)
+    creation_time = models.DateTimeField(default=datetime.now())
 
     def __unicode__(self):
         return u"%s" % self.vote_id
@@ -106,7 +121,6 @@ class Genius(models.Model):
     asker_id = models.ForeignKey(Asker, related_name="asker")
     rate = models.FloatField(default=0)
     rate_friends = models.FloatField(default=0)
-    rate_world = models.FloatField(default=0)
 
 
 # Type == 1 = Suggest Friends, 2 = Suggest vote, 3 = Old Connexion, 4 = Friends +1
@@ -119,7 +133,6 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     level = models.IntegerField(default=0)
     creation_time = models.DateTimeField(default=datetime.now())
-
 
 class Type(models.Model):
     type_id = models.AutoField(primary_key=True)
