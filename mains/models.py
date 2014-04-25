@@ -14,13 +14,12 @@ class Asker(models.Model):
                                      symmetrical=False,
                                      related_name='friend_to+',
                                      blank=True)
-    type_liked = models.ManyToManyField('Type',
+    kind_liked = models.ManyToManyField('Kind',
                                         related_name="+")
     creation_time = models.DateTimeField(default=datetime.now)
     last_time = models.DateTimeField(default=datetime.now)
     last_friend_add = models.DateTimeField(default=datetime.now)
     last_vote = models.DateTimeField(default=datetime.now)
-
 
     def add_relation(self, asker, first=True):
         relation, created = Relation.objects.get_or_create(
@@ -69,7 +68,7 @@ class Question(models.Model):
     question_text = models.CharField(max_length=80)
     seeker = models.ForeignKey(Asker, related_name='seeker')
     target = models.ForeignKey(Asker, related_name='target')
-    type = models.CharField(max_length=10)
+    kind = models.CharField(max_length=10)
     visibility = models.IntegerField(default=0)
     votes = models.IntegerField(default=0)
     trend_grade = models.FloatField(default=0)
@@ -129,11 +128,11 @@ class Notification(models.Model):
     notif_id = models.AutoField(primary_key=True)
     asker_id = models.ForeignKey('Asker', related_name="notified")
     friend_id = models.ForeignKey('Asker', related_name="notifier", null=True)
-    type = models.IntegerField(default=0)
+    kind = models.IntegerField(default=0)
     seen = models.BooleanField(default=False)
     level = models.IntegerField(default=0)
     creation_time = models.DateTimeField(default=datetime.now())
 
-class Type(models.Model):
-    type_id = models.AutoField(primary_key=True)
+class Kind(models.Model):
+    kind_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20)

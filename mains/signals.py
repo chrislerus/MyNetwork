@@ -23,13 +23,13 @@ def logged_in(sender, request, user, **kwargs):
     logger.warning("User log in")
     current_asker = Asker.objects.get(user__username__exact=user.username)
     if (datetime.utcnow().replace(tzinfo=utc) - current_asker.last_friend_add).seconds > 60:
-        Notification.objects.get_or_create(asker_id=current_asker, type=1)
+        Notification.objects.get_or_create(asker_id=current_asker, kind=1)
         logger.warning("Notif created : Suggest friends")
     if (datetime.utcnow().replace(tzinfo=utc) - current_asker.last_vote).seconds > 60:
-        Notification.objects.get_or_create(asker_id=current_asker, type=2)
+        Notification.objects.get_or_create(asker_id=current_asker, kind=2)
         logger.warning("Notif created : Suggest Vote")
     if (datetime.utcnow().replace(tzinfo=utc) - current_asker.last_time).seconds > 60:
-        Notification.objects.get_or_create(asker_id=current_asker, type=3)
+        Notification.objects.get_or_create(asker_id=current_asker, kind=3)
         logger.warning("Notif created : Long time not seeing you!")
         logger.warning((datetime.utcnow().replace(tzinfo=utc) - current_asker.last_time).seconds)
     return
@@ -67,7 +67,7 @@ def vote_created(sender, instance, created, **kwargs):
             logger.warning("-----------------its a friend")
             Notification.objects.get_or_create(asker_id=current_quest.target,
                                                friend_id=current_quest.seeker,
-                                               type=4)
+                                                kind=4)
         # calculate trend_grade question
         Question.set_trend_grade(instance.question_id)
 

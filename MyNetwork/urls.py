@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
-
 from django.contrib import admin
+from api import views
+from rest_framework.urlpatterns import format_suffix_patterns
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -18,6 +20,10 @@ urlpatterns = patterns('',
     url(r'^questions/tome/votes/$', 'mains.views.tome_questions_by_votes'),
     url(r'^questions/tome/(?P<question_id>\d+)/', 'mains.views.detail_answer'),
     url(r'^questions/all/votes/(?P<question_id>\d+)/', 'mains.views.detail_answer'),
-    url(r'^rest/questions/$', 'mains.views.question_list'),
+    url(r'^rest/users/$', views.UserList.as_view()),
+    url(r'^rest/users/(?P<pk>\d+)/$', views.UserDetails.as_view()),
+    url(r'^rest/questions/$', views.QuestionList.as_view()),
+    url(r'^rest/questions/(?P<question_id>\d+)/$', views.QuestionDetails.as_view()),
+    url(r'^rest/users/(?P<pk>\d+)/friends/$', views.FriendList.as_view()),
     url(r'^(?P<username>[a-zA-Z0-9_.-]+)/$', 'mains.views.profile'),
 )

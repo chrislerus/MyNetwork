@@ -1,18 +1,18 @@
-from django.shortcuts import render, render_to_response, redirect
+import logging
+
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
 from django.http import *
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from mains.serializers import QuestionSerializers
-from mains.models import Answer, Question, Asker, Vote
+
+from api.serializers import QuestionSerializer, AskerSerializer
+from mains.models import Answer
 from mains.signals import *
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -143,25 +143,3 @@ def search(request):
     return render_to_response('mains/search.html',
                               {'req_search': req_search, 'current_user': request.user, 'l_quest': l_quest, 'l_user': l_user},
                               context_instance=RequestContext(request))
-
-
-class JSONResponse(HttpResponse):
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
-
-@csrf_exempt
-def question_list(request):
-    if request.method == 'GET':
-        questions = Question.objects.all()
-        serializer = QuestionSerializers(questions, many=True)
-        return JSONResponse(serializer.data)
-    elif request.method == 'POST':
-        data = JSONParser.parse(request)
-        serializer = QuestionSerializers(data=data)
-        try:
-            serializer.save_object()
-            return JSONResponse(serializer.data, status=201)
-        except:
-            return JSONResponse(serializer._errors, status=400)
