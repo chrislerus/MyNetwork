@@ -3,6 +3,7 @@ from mains.models import Question, Asker, Notification
 from rest_framework import serializers
 
 class QuestionSerializer(serializers.ModelSerializer):
+    user = serializers.Field(source='seeker')
     class Meta:
         model = Question
         fields = (
@@ -20,7 +21,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             return question
 
 class AskerSerializer(serializers.ModelSerializer):
-    pk = serializers.Field()
+    user = serializers.Field(source='user')
     class Meta:
         model = Asker
         fields = (
