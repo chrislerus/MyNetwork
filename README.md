@@ -18,8 +18,6 @@ The user can:
 
 - See his profile (Name, friends) and others profiles.
 
-- See what people asked to him/her (His/Her questions).
-
 - Sort by Time or Votes.
 - See questions in the world.
 
