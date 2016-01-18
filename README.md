@@ -15,7 +15,6 @@ Useful
 
 The user can:
 
-- Submit a question to another user.
 
 - See his profile (Name, friends) and others profiles.
 
